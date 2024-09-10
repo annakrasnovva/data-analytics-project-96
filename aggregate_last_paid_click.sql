@@ -9,7 +9,7 @@ with last_visits as (
 
 leads as (
     select
-        date(lv.max_visit_date) as visit_date,
+        date (lv.max_visit_date) as visit_date,
         s.source as utm_source,
         s.medium as utm_medium,
         s.campaign as utm_campaign,
@@ -17,10 +17,8 @@ leads as (
         count(l.lead_id) as leads_count,
         count(
             case
-                when
-                    l.status_id = 142
-                    or l.closing_reason = 'Успешно реализовано'
-                    then lv.visitor_id
+                when l.status_id = 142
+                or l.closing_reason = 'Успешно реализовано' then lv.visitor_id
             end
         ) as purchases_count,
         sum(amount) as revenue
@@ -28,7 +26,7 @@ leads as (
     inner join sessions as s
         on lv.visitor_id = s.visitor_id and lv.max_visit_date = s.visit_date
     left join leads as l
-        on s.visitor_id = l.visitor_id and s.visit_date <= l.created_at
+        on s.visitor_id = l.visitor_id and l.created_at >= s.visit_date
     group by 1, 2, 3, 4
 ),
 
@@ -54,10 +52,10 @@ ads as (
 
 select
     l.visit_date,
+    l.visitors_count,
     l.utm_source,
     l.utm_medium,
     l.utm_campaign,
-    l.visitors_count,
     a.total_cost,
     l.leads_count,
     l.purchases_count,
