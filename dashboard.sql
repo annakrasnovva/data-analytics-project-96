@@ -58,11 +58,11 @@ select
     coalesce (l.utm_campaign, '-') as utm_campaign,
     l.visitors_count,
     l.leads_count,
-    coalesce (l.leads_count, 0):: float / visitors_count:: float * 100 as leads_cr_percents,
+    round(coalesce (l.leads_count, 0):: numeric / visitors_count:: numeric * 100, 2) as leads_cr_percents,
     l.purchases_count,
     case
     	when l.leads_count is null or leads_count = 0 or purchases_count is null or purchases_count = 0 then 0
-    	else l.purchases_count:: float / l.leads_count:: float * 100
+    	else round(l.purchases_count:: numeric / l.leads_count:: numeric * 100, 2)
     end as purchases_cr_percents,
     coalesce (a.total_cost, 0) as total_cost,
     l.revenue
@@ -137,18 +137,15 @@ select
     l.utm_campaign,
     l.visitors_count,
     l.leads_count,
-   coalesce (l.leads_count, 0):: float / visitors_count:: float * 100 as leads_cr_percents,
+    round (coalesce (l.leads_count, 0):: numeric / visitors_count:: numeric * 100, 2) as leads_cr_percents,
     l.purchases_count,
     case
     	when l.leads_count is null or leads_count = 0 or purchases_count is null or purchases_count = 0 then 0
-    	else l.purchases_count:: float / l.leads_count:: float * 100
+    	else round (l.purchases_count:: numeric / l.leads_count:: numeric * 100, 2)
     end as purchases_cr_percents,
     a.total_cost,
     l.revenue,
-    case
-    	when a.total_cost is null or a.total_cost = 0 then 0
-    	else a.total_cost / l.visitors_count
-    end as cpu,
+    coalesce (a.total_cost / l.visitors_count, 0) as cpu,
     case
     	when a.total_cost is null or a.total_cost = 0 or leads_count = 0 then 0
     	else a.total_cost / l.leads_count
