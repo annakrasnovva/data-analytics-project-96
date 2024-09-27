@@ -3,7 +3,7 @@ with last_visits as (
         s.visitor_id,
         max(s.visit_date) as max_visit_date
     from sessions as s
-    where s.medium <> 'organic'
+    where s.medium != 'organic'
     group by 1
 )
 
@@ -23,7 +23,7 @@ left join sessions as s
     on lv.visitor_id = s.visitor_id and lv.max_visit_date = s.visit_date
 left join leads as l
     on lv.visitor_id = l.visitor_id
-where s.medium <> 'organic'
+where s.medium != 'organic'
 order by
     amount desc nulls last,
     visit_date asc,
