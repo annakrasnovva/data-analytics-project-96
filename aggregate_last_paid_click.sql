@@ -3,13 +3,13 @@ with last_visits as (
         max(visit_date) as max_visit_date,
         visitor_id
     from sessions
-    where medium <> 'organic'
+    where medium != 'organic'
     group by 2
 ),
 
 leads as (
     select
-        date (lv.max_visit_date) as visit_date,
+        date(lv.max_visit_date) as visit_date,
         s.source as utm_source,
         s.medium as utm_medium,
         s.campaign as utm_campaign,
@@ -17,11 +17,11 @@ leads as (
         count(l.lead_id) as leads_count,
         count(
             case
-                when l.status_id = 142
-                or l.closing_reason = 'Успешно реализовано' then lv.visitor_id
+                    when l.status_id = 142
+                    or l.closing_reason = 'Успешно реализовано' then lv.visitor_id
             end
         ) as purchases_count,
-        sum(amount) as revenue
+        sum(l.amount) as revenue
     from last_visits as lv
     inner join sessions as s
         on lv.visitor_id = s.visitor_id and lv.max_visit_date = s.visit_date
