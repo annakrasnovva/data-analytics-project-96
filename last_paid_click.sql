@@ -1,8 +1,9 @@
 with last_visits as (
-    select s.visitor_id,
+    select
+        s.visitor_id,
         max(s.visit_date) as max_visit_date
     from sessions as s
-    where s.medium != 'organic'
+    where s.medium <> 'organic'
     group by 1
 )
 
@@ -21,8 +22,8 @@ from last_visits as lv
 left join sessions as s
     on lv.visitor_id = s.visitor_id and lv.max_visit_date = s.visit_date
 left join leads as l
-    on l.visitor_id = lv.visitor_id
-where s.medium != 'organic'
+    on lv.visitor_id = l.visitor_id
+where s.medium <> 'organic'
 order by
     amount desc nulls last,
     visit_date asc,
