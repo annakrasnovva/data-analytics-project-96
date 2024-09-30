@@ -24,9 +24,4 @@ left join sessions as s
 left join leads as l
     on lv.visitor_id = l.visitor_id
 where s.medium != 'organic'
-order by
-    amount desc nulls last,
-    visit_date asc,
-    utm_source asc,
-    utm_medium asc,
-    utm_campaign asc;
+order by 8 desc nulls last, 2 asc, 3 asc, 4 asc, 5 asc;
