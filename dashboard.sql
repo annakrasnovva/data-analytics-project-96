@@ -65,12 +65,13 @@ select
     a.total_cost,
     l.revenue,
     coalesce(a.total_cost / l.visitors_count, 0) as cpu,
-    round (coalesce(l.leads_count, 0)::numeric /
-        l.visitors_count::numeric * 100, 2) as leads_cr_percents,
+    round(
+        coalesce(l.leads_count, 0)::numeric / l.visitors_count::numeric * 100, 2
+        ) as leads_cr_percents,
     case
         when
             l.leads_count is null or l.leads_count = 0
-        or purchases_count is null or l.purchases_count = 0 then 0
+        or l.purchases_count is null or l.purchases_count = 0 then 0
     	else round(l.purchases_count::numeric / l.leads_count::numeric * 100, 2)
     end as purchases_cr_percents,
     case
