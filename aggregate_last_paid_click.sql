@@ -20,7 +20,7 @@ leads as (
                 when
                     l.status_id = 142
                     or l.closing_reason = 'Успешно реализовано'
-                then lv.visitor_id
+                    then lv.visitor_id
             end
         ) as purchases_count,
         sum(l.amount) as revenue
