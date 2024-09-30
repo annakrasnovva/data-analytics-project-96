@@ -2,28 +2,30 @@
 
 with last_visits as (
     select
-        max(visit_date) as max_visit_date,
-        visitor_id
+        visitor_id,
+        max(visit_date) as max_visit_date
     from sessions
-    where medium <> 'organic'
+    where medium != 'organic'
     group by 2
 ),
 
 leads as (
     select
-        date (lv.max_visit_date) as visit_date,
         s.source as utm_source,
         s.medium as utm_medium,
         s.campaign as utm_campaign,
+        date(lv.max_visit_date) as visit_date,
         count(distinct lv.visitor_id) as visitors_count,
         count(l.lead_id) as leads_count,
         count(
             case
-                when l.status_id = 142
-                or l.closing_reason = 'Успешно реализовано' then lv.visitor_id
+                when
+                    l.status_id = 142
+                or l.closing_reason = 'Успешно реализовано'
+                then lv.visitor_id
             end
         ) as purchases_count,
-        sum(amount) as revenue
+        sum(l.amount) as revenue
     from last_visits as lv
     inner join sessions as s
         on lv.visitor_id = s.visitor_id and lv.max_visit_date = s.visit_date
@@ -59,15 +61,17 @@ select
     l.utm_campaign,
     l.visitors_count,
     l.leads_count,
-    round (coalesce (l.leads_count, 0):: numeric / visitors_count:: numeric * 100, 2) as leads_cr_percents,
     l.purchases_count,
-    case
-    	when l.leads_count is null or leads_count = 0 or purchases_count is null or purchases_count = 0 then 0
-    	else round (l.purchases_count:: numeric / l.leads_count:: numeric * 100, 2)
-    end as purchases_cr_percents,
     a.total_cost,
     l.revenue,
     coalesce (a.total_cost / l.visitors_count, 0) as cpu,
+    round(coalesce(l.leads_count, 0):: numeric /
+    visitors_count:: numeric * 100, 2) as leads_cr_percents,
+    case
+    	when l.leads_count is null or leads_count = 0
+        or purchases_count is null or purchases_count = 0 then 0
+    	else round(l.purchases_count:: numeric / l.leads_count:: numeric * 100, 2)
+    end as purchases_cr_percents,
     case
     	when a.total_cost is null or a.total_cost = 0 or leads_count = 0 then 0
     	else a.total_cost / l.leads_count
