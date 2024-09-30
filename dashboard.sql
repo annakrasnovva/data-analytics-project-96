@@ -72,16 +72,17 @@ select
         when
             l.leads_count is null or l.leads_count = 0
             or l.purchases_count is null or l.purchases_count = 0 then 0
-      	else round(l.purchases_count::numeric / l.leads_count::numeric * 100, 2)
+        else round(l.purchases_count::numeric / l.leads_count::numeric * 100, 2)
     end as purchases_cr_percents,
     case
         when
             a.total_cost is null or a.total_cost = 0 or l.leads_count = 0 then 0
-    	else a.total_cost / l.leads_count
-        end as cpl,
+        else a.total_cost / l.leads_count
+    end as cpl,
     case
-        when a.total_cost is null or a.total_cost = 0 or l.purchases_count = 0 then 0
-    	else a.total_cost / l.purchases_count
+        when a.total_cost is null or a.total_cost = 0
+            or l.purchases_count = 0 then 0
+        else a.total_cost / l.purchases_count
     end as cppu,
     case
         when a.total_cost is null or a.total_cost = 0 then 0
