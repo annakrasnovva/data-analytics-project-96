@@ -80,7 +80,8 @@ select
         else a.total_cost / l.leads_count
     end as cpl,
     case
-        when a.total_cost is null or a.total_cost = 0
+        when
+            a.total_cost is null or a.total_cost = 0
             or l.purchases_count = 0 then 0
         else a.total_cost / l.purchases_count
     end as cppu,
