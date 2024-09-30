@@ -21,8 +21,8 @@ leads as (
             case
                 when
                     l.status_id = 142
-                or l.closing_reason = 'Успешно реализовано'
-                then lv.visitor_id
+                    or l.closing_reason = 'Успешно реализовано'
+                    then lv.visitor_id
             end
         ) as purchases_count,
         sum(l.amount) as revenue
@@ -64,16 +64,18 @@ select
     l.purchases_count,
     a.total_cost,
     l.revenue,
-    coalesce (a.total_cost / l.visitors_count, 0) as cpu,
-    round(coalesce(l.leads_count, 0):: numeric /
-    visitors_count:: numeric * 100, 2) as leads_cr_percents,
+    coalesce(a.total_cost / l.visitors_count, 0) as cpu,
+    round (coalesce(l.leads_count, 0)::numeric /
+        l.visitors_count::numeric * 100, 2) as leads_cr_percents,
     case
-    	when l.leads_count is null or leads_count = 0
-        or purchases_count is null or purchases_count = 0 then 0
-    	else round(l.purchases_count:: numeric / l.leads_count:: numeric * 100, 2)
+        when
+            l.leads_count is null or l.leads_count = 0
+        or purchases_count is null or l.purchases_count = 0 then 0
+    	else round(l.purchases_count::numeric / l.leads_count::numeric * 100, 2)
     end as purchases_cr_percents,
     case
-    	when a.total_cost is null or a.total_cost = 0 or leads_count = 0 then 0
+    	when
+            a.total_cost is null or a.total_cost = 0 or leads_count = 0 then 0
     	else a.total_cost / l.leads_count
     end as cpl,
     case
@@ -82,7 +84,7 @@ select
     end as cppu,
     case
     	when a.total_cost is null or a.total_cost = 0 then 0
-    	else ((revenue - total_cost) / total_cost) * 100
+    	else ((l.revenue - a.total_cost) / a.total_cost) * 100
     end as roi
 from leads as l
 left join ads as a
