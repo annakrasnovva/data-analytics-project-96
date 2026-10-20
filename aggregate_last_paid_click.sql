@@ -4,7 +4,7 @@ with last_visits as (
         max(visit_date) as max_visit_date
     from sessions
     where medium != 'organic'
-    group by 2
+    group by 1
 ),
 
 leads as (
